@@ -1,17 +1,19 @@
 "use client";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
+import { VersionedTransaction } from "@solana/web3.js";
 
 const SOL = "So11111111111111111111111111111111111111112";
 const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
 export const SendLamport: React.FC = () => {
-  const { publicKey } = useWallet();
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction, signTransaction } = useWallet();
   const [queryResponse, setQueryResponse] = useState();
   const [inputMint, setInputMint] = useState(SOL);
   const [outputMint, setOutputMint] = useState(USDC);
@@ -52,8 +54,20 @@ export const SendLamport: React.FC = () => {
       })
     ).json();
 
+    // 将swapTransaction转成Buffer
     const { swapTransaction } = transactions;
-    console.log(swapTransaction);
+    const swapTransactionBuf = Buffer.from(swapTransaction, "base64");
+    // 反序列化
+    var transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+    // 签名
+    const signTrans = await signTransaction?.(transaction);
+    // 序列化
+    const rawTransaction = signTrans?.serialize();
+    // 钱包交互
+    connection.sendRawTransaction(rawTransaction!, {
+      skipPreflight: true,
+      maxRetries: 2,
+    });
   };
   return (
     <div>
