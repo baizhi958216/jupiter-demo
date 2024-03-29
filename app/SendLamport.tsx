@@ -13,7 +13,7 @@ const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
 export const SendLamport: React.FC = () => {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { publicKey, signTransaction, signMessage } = useWallet();
   const [queryResponse, setQueryResponse] = useState();
   const [inputMint, setInputMint] = useState(SOL);
   const [outputMint, setOutputMint] = useState(USDC);
@@ -33,6 +33,9 @@ export const SendLamport: React.FC = () => {
   }, [amount, slippageBps, inputMint, outputMint]);
 
   const buyThispls = async () => {
+    if (signMessage) {
+      signMessage(new TextEncoder().encode("hello world"));
+    }
     const tokenAccount = getAssociatedTokenAddressSync(
       ASSOCIATED_TOKEN_PROGRAM_ID,
       TOKEN_PROGRAM_ID
