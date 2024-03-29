@@ -4,8 +4,8 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import {
-  WalletModalProvider,
   WalletDisconnectButton,
+  WalletModalProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
@@ -19,18 +19,19 @@ export const Wallet: FC = () => {
   //   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   //   自定义节点
   const endpoint = useMemo(() => "http://localhost:8899", []);
-  const wallets = useMemo(
-    () => [new PhantomWalletAdapter()],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <div className="flex gap-3 p-6">
-            <WalletMultiButton />
-            <WalletDisconnectButton />
+          {/* <WalletMultiButton /> */}
+          <div className="flex justify-between py-3 mx-5">
+            <div>
+              <WalletMultiButton className="opacity-90" />
+            </div>
+            <div>
+              <WalletDisconnectButton />
+            </div>
           </div>
           <SendLamport />
         </WalletModalProvider>
